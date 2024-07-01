@@ -10,6 +10,7 @@ import model.Person;
 import static java.util.stream.IntStream.range;
 
 public class StreamPractice {
+    private static final String NUMBERS_SEPARATOR = ",";
     /**
      * Given list of strings where each element contains 1+ numbers:
      * input = {"5,30,100", "0,22,7", ...}
@@ -18,7 +19,7 @@ public class StreamPractice {
      * "Can't get min value from list: < Here is our input 'numbers' >"
      */
     public int findMinEvenNumber(List<String> numbers) {
-        return numbers.stream().map(str -> str.split(","))
+        return numbers.stream().map(str -> str.split(NUMBERS_SEPARATOR))
                 .flatMap(Arrays::stream)
                 .map(Integer::valueOf)
                 .filter(i -> i % 2 == 0)
@@ -32,18 +33,14 @@ public class StreamPractice {
      * But before that subtract 1 from each element on an odd position (having the odd index).
      */
     public Double getOddNumsAverage(List<Integer> numbers) {
-        List<Integer> subtractedNumbers = range(0, numbers.size())
+        return range(0, numbers.size())
                 .mapToObj(i -> (i % 2 == 1) ?
                         numbers.get(i) - 1 :
                         numbers.get(i))
                 .filter(i -> i % 2 == 1)
-                .toList();
-        if (subtractedNumbers.isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        return (double)(subtractedNumbers.stream()
                 .mapToInt(Integer::intValue)
-                .sum()) / subtractedNumbers.size();
+                .average()
+                .getAsDouble();
     }
 
     /**
@@ -75,12 +72,11 @@ public class StreamPractice {
     public List<Person> getWorkablePeople(int fromAge, int femaleToAge,
                                           int maleToAge, List<Person> peopleList) {
         return peopleList.stream()
-                .filter(p-> p.getAge() >= fromAge &&
-                        p.getSex() == Person.Sex.MAN &&
-                        p.getAge() <= maleToAge ||
-                        p.getAge() >= fromAge &&
-                        p.getSex() == Person.Sex.WOMAN &&
-                        p.getAge() <= femaleToAge)
+                .filter(p-> (p.getAge() >= fromAge) &&
+                        ((p.getSex() == Person.Sex.MAN &&
+                                p.getAge() <= maleToAge) ||
+                                (p.getSex() == Person.Sex.WOMAN &&
+                                        p.getAge() <= femaleToAge)))
                 .toList();
     }
 
